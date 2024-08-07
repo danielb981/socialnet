@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from posts.serializers import *
+from rest_framework.viewsets import ModelViewSet
 class PublicationList(APIView):
     def get(self, request, *args, **kwargs):
         publication_list = Publication.objects.all()
@@ -22,7 +23,7 @@ class PostCreate(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response("Created", status=201)
-        return Response("Error", status=400)
+        return Response(serializer.errors, status=400)
 
 class PostUpdate(APIView):
     def put(self, request, *args, **kwargs):
@@ -42,3 +43,12 @@ class PostDelete(APIView):
         publication = Publication.objects.get(pk=kwargs["pk"])
         publication.delete()
         return Response("no data", 204)
+
+class LikeViewSet(ModelViewSet):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
+
+
+class DislikeViewSet(ModelViewSet):
+    queryset = Dislike.objects.all()
+    serializer_class = DislikeSerializer
